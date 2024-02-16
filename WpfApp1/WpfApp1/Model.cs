@@ -1,39 +1,76 @@
-﻿using Reactive.Bindings;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using Entity;
+using Reactive.Bindings;
 using System.Reactive.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
+using Usecase;
 
 namespace WpfApp1
 {
-    internal class Model
+    public class Model
     {
-        private const string Text_InitValue = "Init Text";
-        private const int Number_InitValue = 100;
+        public ReactivePropertySlim<string> Text { get; } = new ReactivePropertySlim<string>();
 
-        public ReactivePropertySlim<String> Text { get; }
+        public ReactivePropertySlim<int> Number { get; } = new ReactivePropertySlim<int>();
 
-        public ReactivePropertySlim<int> Number { get; }
+        private readonly SaveLoadUsecase _saveLoadUsecase;
 
-        public Model()
+        private readonly InitUsecase _initUsecase;
+
+        public Model(SaveLoadUsecase saveLoadUsecase, InitUsecase initUsecase)
         {
-            Text = new ReactivePropertySlim<String>(Text_InitValue);
+            _saveLoadUsecase = saveLoadUsecase;
+            _initUsecase = initUsecase;
 
-            Number = new ReactivePropertySlim<int>(Number_InitValue);
+            LoadEntity();
+
+            Text.Where(input => TextVO.IsValid(input))
+                .Subscribe(validValue =>
+                {
+                    var entity = _saveLoadUsecase.Load();
+                    entity.SetText(new(validValue));
+                    _saveLoadUsecase.Save(entity);
+                });
+            Text.Where(input => !TextVO.IsValid(input))
+                .Subscribe(InvalidValue =>
+                {
+                    var currected = TextVO.CurrectValue(InvalidValue);
+                    Text.Value = currected;
+                });
+
+            Number.Where(input => NumberVO.IsValid(input))
+                .Subscribe(validValue =>
+                {
+                    var entity = _saveLoadUsecase.Load();
+                    entity.SetNumber(new(validValue));
+                    _saveLoadUsecase.Save(entity);
+                });
+            Number.Where(input => !NumberVO.IsValid(input))
+                .Subscribe(InvalidValue =>
+                {
+                    var currected = NumberVO.CurrectValue(InvalidValue);
+                    Number.Value = currected;
+                });
+        }
+
+        private void LoadEntity()
+        {
+            Text.Value = _saveLoadUsecase.Load().Text.Content;
+            Number.Value = _saveLoadUsecase.Load().Number.Content;
         }
 
         internal void Init()
         {
-            Text.Value = Text_InitValue;
-            Number.Value = Number_InitValue;
+            _initUsecase.Init();
+            LoadEntity();
         }
 
         internal void ShowModelData()
         {
-            MessageBox.Show($"Text:{Text.Value}, Number:{Number.Value}");
+            var entity = _saveLoadUsecase.Load();
+            var text = entity.Text.Content;
+            var number = entity.Number.Content;
+
+            MessageBox.Show($"XXEntity Data\n\nText : {text}\n Number : {number}");
         }
     }
 }

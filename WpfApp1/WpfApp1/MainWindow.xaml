@@ -26,6 +26,6 @@
         <TextBox Grid.Column="1" Grid.Row="1" Margin="5" Width="100" HorizontalAlignment="Left" Text="{Binding Number.Value}"/>
 
         <Button Grid.Column="1" Grid.Row="2" Content="初期化" Command="{Binding InitCommand}"/>
-        <Button Grid.Column="1" Grid.Row="3" Content="Model値確認" Command="{Binding ShowCommand}"/>
+        <Button Grid.Column="1" Grid.Row="3" Content="Repository値確認" Command="{Binding ShowCommand}"/>
     </Grid>
 </Window>

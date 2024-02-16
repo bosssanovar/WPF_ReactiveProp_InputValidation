@@ -1,15 +1,10 @@
-﻿using Reactive.Bindings;
+﻿using Entity;
+using Microsoft.Extensions.DependencyInjection;
+using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
-using System.Text;
+using Repository;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
+using Usecase;
 
 namespace WpfApp1
 {
@@ -20,24 +15,20 @@ namespace WpfApp1
     {
         public MainWindow()
         {
-            Text =
-                _model.Text.ToReactivePropertyAsSynchronized(
-                    model => model.Value,       // propertySelector
-                    model => model,             // convert
-                    value =>                    // convertBack
-                    {
-                        if (value.Length > 10) return value.Substring(0, 10);
-                        return value;
-                    });
+            // DI
+            var services = new ServiceCollection();
+            services.AddSingleton<IXXRepository, InMemoryXXRepository>();
+            services.AddTransient<SaveLoadUsecase>();
+            services.AddTransient<InitUsecase>();
+            services.AddTransient<Model>();
+            var provider = services.BuildServiceProvider();
 
-            Number = _model.Number.ToReactivePropertyAsSynchronized(
-                    model => model.Value,       // propertySelector
-                    model => model,             // convert
-                    value =>                    // convertBack
-                    {
-                        if (value > 500) return 500;
-                        return value;
-                    });
+            _model = provider.GetRequiredService<Model>();
+
+            Text =
+                _model.Text.ToReactivePropertyAsSynchronized(x => x.Value);
+
+            Number = _model.Number.ToReactivePropertyAsSynchronized(x => x.Value);
 
             InitCommand = new AsyncReactiveCommand();
             InitCommand.Subscribe(async () =>

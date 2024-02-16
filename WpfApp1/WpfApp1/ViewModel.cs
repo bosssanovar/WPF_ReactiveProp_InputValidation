@@ -1,10 +1,5 @@
 ﻿using Reactive.Bindings;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace WpfApp1
 {
@@ -12,7 +7,7 @@ namespace WpfApp1
     {
         public event PropertyChangedEventHandler? PropertyChanged;
 
-        private Model _model = new Model();
+        private Model _model;
 
         public ReactiveProperty<string> Text { get; }
         public ReactiveProperty<int> Number { get; }
