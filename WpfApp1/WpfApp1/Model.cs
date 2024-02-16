@@ -26,6 +26,8 @@ namespace WpfApp1
             Text.Where(input => TextVO.IsValid(input))
                 .Subscribe(validValue =>
                 {
+                    // TODO K.I : ここをDRY
+                    // TODO K.I : Usecaseを設計しなおし
                     var entity = _saveLoadUsecase.Load();
                     entity.Text = new(validValue);
                     _saveLoadUsecase.Save(entity);
@@ -54,8 +56,10 @@ namespace WpfApp1
 
         private void LoadEntity()
         {
-            Text.Value = _saveLoadUsecase.Load().Text.Content;
-            Number.Value = _saveLoadUsecase.Load().Number.Content;
+            var entity = _saveLoadUsecase.Load();
+
+            Text.Value = entity.Text.Content;
+            Number.Value = entity.Number.Content;
         }
 
         internal void Init()
