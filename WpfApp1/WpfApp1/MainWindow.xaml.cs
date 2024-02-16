@@ -25,8 +25,7 @@ namespace WpfApp1
 
             _model = provider.GetRequiredService<Model>();
 
-            Text =
-                _model.Text.ToReactivePropertyAsSynchronized(x => x.Value);
+            Text = _model.Text.ToReactivePropertyAsSynchronized(x => x.Value);
 
             Number = _model.Number.ToReactivePropertyAsSynchronized(x => x.Value);
 

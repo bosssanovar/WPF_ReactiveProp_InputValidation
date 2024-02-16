@@ -27,7 +27,7 @@ namespace WpfApp1
                 .Subscribe(validValue =>
                 {
                     var entity = _saveLoadUsecase.Load();
-                    entity.SetText(new(validValue));
+                    entity.Text = new(validValue);
                     _saveLoadUsecase.Save(entity);
                 });
             Text.Where(input => !TextVO.IsValid(input))
@@ -41,7 +41,7 @@ namespace WpfApp1
                 .Subscribe(validValue =>
                 {
                     var entity = _saveLoadUsecase.Load();
-                    entity.SetNumber(new(validValue));
+                    entity.Number = new(validValue);
                     _saveLoadUsecase.Save(entity);
                 });
             Number.Where(input => !NumberVO.IsValid(input))

@@ -7,14 +7,9 @@ using System.Threading.Tasks;
 
 namespace Usecase
 {
-    public class InitUsecase
+    public class InitUsecase(IXXRepository repository)
     {
-        IXXRepository repository;
-
-        public InitUsecase(IXXRepository repository)
-        {
-            this.repository = repository;
-        }
+        private readonly IXXRepository repository = repository;
 
         public void Init()
         {

@@ -3,14 +3,9 @@ using Repository;
 
 namespace Usecase
 {
-    public class SaveLoadUsecase
+    public class SaveLoadUsecase(IXXRepository repository)
     {
-        IXXRepository repository;
-
-        public SaveLoadUsecase(IXXRepository repository)
-        {
-            this.repository = repository;
-        }
+        private readonly IXXRepository repository = repository;
 
         public void Save(XXEntity entity)
         {
