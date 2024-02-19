@@ -122,38 +122,6 @@ namespace WpfApp1
             LoadEntity();
         }
 
-        internal void ShowData()
-        {
-            var entity = _entity.Value;
-            var text = entity.Text.Content;
-            var number = entity.Number.Content;
-            var b = entity.Bool.Content;
-            var someEnum = entity.SomeEnum.Content;
-
-            var sb = new StringBuilder();
-            sb.AppendLine("Model Data : ");
-            sb.AppendLine($"  Text : {text}");
-            sb.AppendLine($"  Number : {number}");
-            sb.AppendLine($"  Bool : {b}");
-            sb.AppendLine($"  SomeEnum : {someEnum.GetText()}");
-
-            sb.AppendLine();
-
-            entity = _saveLoadUsecase.Load();
-            text = entity.Text.Content;
-            number = entity.Number.Content;
-            b = entity.Bool.Content;
-            someEnum = entity.SomeEnum.Content;
-
-            sb.AppendLine("Repository Data : ");
-            sb.AppendLine($"  Text : {text}");
-            sb.AppendLine($"  Number : {number}");
-            sb.AppendLine($"  Bool : {b}");
-            sb.AppendLine($"  SomeEnum : {someEnum.GetText()}");
-
-            MessageBox.Show(sb.ToString());
-        }
-
         internal void Save()
         {
             Debug.WriteLine("Save");

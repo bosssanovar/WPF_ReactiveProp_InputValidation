@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Reactive.Bindings;
 using Reactive.Bindings.Extensions;
 using Repository;
+using RepositoryMonitor;
 using System.Windows;
 using Usecase;
 
@@ -13,6 +14,8 @@ namespace WpfApp1
     /// </summary>
     public partial class MainWindow : Window
     {
+        private RepositoryMonitorView _repositoryMonitorView;
+
         public MainWindow()
         {
             // DI
@@ -21,9 +24,12 @@ namespace WpfApp1
             services.AddTransient<SaveLoadUsecase>();
             services.AddTransient<InitUsecase>();
             services.AddTransient<Model>();
+            services.AddTransient<RepositoryMonitorView>();
             var provider = services.BuildServiceProvider();
 
             _model = provider.GetRequiredService<Model>();
+
+            _repositoryMonitorView = provider.GetRequiredService<RepositoryMonitorView>();
 
             Text = _model.Text.ToReactivePropertySlimAsSynchronized(x => x.Value);
             Number = _model.Number.ToReactivePropertySlimAsSynchronized(x => x.Value);
@@ -36,14 +42,6 @@ namespace WpfApp1
                 await Task.Delay(500);
 
                 _model.Init();
-            });
-
-            ShowCommand = new AsyncReactiveCommand();
-            ShowCommand.Subscribe(async () =>
-            {
-                await Task.Delay(500);
-
-                _model.ShowData();
             });
 
             SaveCommand = new AsyncReactiveCommand();
@@ -60,6 +58,14 @@ namespace WpfApp1
             InitMediator();
 
             InitializeComponent();
+        }
+
+        protected override void OnContentRendered(EventArgs e)
+        {
+            base.OnContentRendered(e);
+
+            _repositoryMonitorView.Owner = this;
+            _repositoryMonitorView.Show();
         }
 
         private void InitComboBoxItems()

@@ -55,7 +55,6 @@
                 <Button Margin="5" Content="保存" Command="{Binding SaveCommand}"/>
             </StackPanel>
             <Button Grid.Row="1" Margin="5" Content="初期化" Command="{Binding InitCommand}"/>
-            <Button Grid.Row="2" Margin="5" Content="内部値確認" Command="{Binding ShowCommand}"/>
         </Grid>
     </Grid>
 </Window>
