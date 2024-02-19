@@ -28,6 +28,8 @@ namespace WpfApp1
                 {
                     // TODO K.I : ここをDRY
                     // TODO K.I : Usecaseを設計しなおし
+                    // TODO K.I : 他コントロールも実装
+                    // TODO K.I : 他値補正も検討
                     var entity = _saveLoadUsecase.Load();
                     entity.Text = new(validValue);
                     _saveLoadUsecase.Save(entity);
