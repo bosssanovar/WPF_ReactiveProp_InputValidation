@@ -1,6 +1,7 @@
 ﻿using Entity;
 using Reactive.Bindings;
 using System;
+using System.Diagnostics;
 using System.Reactive.Linq;
 using System.Windows;
 using Usecase;
@@ -34,8 +35,6 @@ namespace WpfApp1
                 {
                     // TODO K.I : ここをDRY
                     // TODO K.I : Usecaseを設計しなおし
-                    // TODO K.I : 他コントロールも実装
-                    // TODO K.I : 他値補正も検討
                     var entity = _saveLoadUsecase.Load();
                     entity.Text = new(validValue);
                     _saveLoadUsecase.Save(entity);
@@ -78,6 +77,9 @@ namespace WpfApp1
 
         private void SaveLoadUsecase_OnSomeEnumChanged()
         {
+            // TODO K.I : デバッグ用
+            Debug.WriteLine("SaveLoadUsecase_OnSomeEnumChanged");
+
             var entity = _saveLoadUsecase.Load();
             SomeEnum.Value = entity.SomeEnum.Content;
         }

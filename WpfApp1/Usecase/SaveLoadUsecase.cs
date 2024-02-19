@@ -18,6 +18,7 @@ namespace Usecase
         public XXEntity Load()
         {
             var entity = repository.Load();
+            entity.OnSomeEnumChanged -= Entity_OnSomeEnumChanged;
             entity.OnSomeEnumChanged += Entity_OnSomeEnumChanged;
 
             return entity;
