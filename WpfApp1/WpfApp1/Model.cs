@@ -1,5 +1,6 @@
 ﻿using Entity;
 using Reactive.Bindings;
+using System;
 using System.Reactive.Linq;
 using System.Windows;
 using Usecase;
@@ -12,6 +13,10 @@ namespace WpfApp1
 
         public ReactivePropertySlim<int> Number { get; } = new ReactivePropertySlim<int>();
 
+        public ReactivePropertySlim<bool> Bool { get; } = new ReactivePropertySlim<bool>();
+
+        public ReactivePropertySlim<SomeEnum> SomeEnum { get; } = new ReactivePropertySlim<SomeEnum>();
+
         private readonly SaveLoadUsecase _saveLoadUsecase;
 
         private readonly InitUsecase _initUsecase;
@@ -19,6 +24,7 @@ namespace WpfApp1
         public Model(SaveLoadUsecase saveLoadUsecase, InitUsecase initUsecase)
         {
             _saveLoadUsecase = saveLoadUsecase;
+            _saveLoadUsecase.OnSomeEnumChanged += SaveLoadUsecase_OnSomeEnumChanged;
             _initUsecase = initUsecase;
 
             LoadEntity();
@@ -54,6 +60,26 @@ namespace WpfApp1
                     var currected = NumberVO.CurrectValue(InvalidValue);
                     Number.Value = currected;
                 });
+
+            Bool.Subscribe(value =>
+                {
+                    var entity = _saveLoadUsecase.Load();
+                    entity.Bool = new(value);
+                    _saveLoadUsecase.Save(entity);
+                });
+
+            SomeEnum.Subscribe(value =>
+                {
+                    var entity = _saveLoadUsecase.Load();
+                    entity.SomeEnum = new(value);
+                    _saveLoadUsecase.Save(entity);
+                });
+        }
+
+        private void SaveLoadUsecase_OnSomeEnumChanged()
+        {
+            var entity = _saveLoadUsecase.Load();
+            SomeEnum.Value = entity.SomeEnum.Content;
         }
 
         private void LoadEntity()
@@ -62,6 +88,8 @@ namespace WpfApp1
 
             Text.Value = entity.Text.Content;
             Number.Value = entity.Number.Content;
+            Bool.Value = entity.Bool.Content;
+            SomeEnum.Value = entity.SomeEnum.Content;
         }
 
         internal void Init()
@@ -75,8 +103,10 @@ namespace WpfApp1
             var entity = _saveLoadUsecase.Load();
             var text = entity.Text.Content;
             var number = entity.Number.Content;
+            var b = entity.Bool.Content;
+            var someEnum = entity.SomeEnum.Content;
 
-            MessageBox.Show($"XXEntity Data\n\nText : {text}\n Number : {number}");
+            MessageBox.Show($"XXEntity Data\n\nText : {text}\n Number : {number}\n Bool : {b}\n SomeEnum : {someEnum.GetText()}");
         }
     }
 }

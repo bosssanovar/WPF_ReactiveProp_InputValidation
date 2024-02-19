@@ -1,4 +1,5 @@
-﻿using Reactive.Bindings;
+﻿using Entity;
+using Reactive.Bindings;
 using System.ComponentModel;
 
 namespace WpfApp1
@@ -11,10 +12,23 @@ namespace WpfApp1
 
         private readonly Model _model;
 
-        public ReactiveProperty<string> Text { get; }
-        public ReactiveProperty<int> Number { get; }
+        public ReactivePropertySlim<string> Text { get; }
+        public ReactivePropertySlim<int> Number { get; }
+        public ReactivePropertySlim<bool> Bool { get; }
+        public ReactivePropertySlim<SomeEnum> SomeEnum { get; }
 
         public AsyncReactiveCommand InitCommand { get; }
         public AsyncReactiveCommand ShowCommand { get; }
+
+        public ReactivePropertySlim<List<ComboBoxItemDisplayValue<SomeEnum>>> ComboBoxItems { get; private set; }
+
+
+        private void InitMediator()
+        {
+            Bool.Subscribe(x =>
+            {
+                InitComboBoxItems();
+            });
+        }
     }
 }
