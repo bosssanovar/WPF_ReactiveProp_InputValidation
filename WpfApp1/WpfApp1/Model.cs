@@ -1,8 +1,11 @@
 ﻿using Entity;
 using Reactive.Bindings;
+using Reactive.Bindings.Extensions;
 using System;
 using System.Diagnostics;
 using System.Reactive.Linq;
+using System.Security.Cryptography.Xml;
+using System.Text;
 using System.Windows;
 using Usecase;
 
@@ -10,13 +13,17 @@ namespace WpfApp1
 {
     public class Model
     {
-        public ReactivePropertySlim<string> Text { get; } = new ReactivePropertySlim<string>();
+        public bool IsAutoSave { get; set; }
 
-        public ReactivePropertySlim<int> Number { get; } = new ReactivePropertySlim<int>();
+        private ReactivePropertySlim<XXEntity> _entity;
 
-        public ReactivePropertySlim<bool> Bool { get; } = new ReactivePropertySlim<bool>();
+        public ReactivePropertySlim<string> Text { get; }
 
-        public ReactivePropertySlim<SomeEnum> SomeEnum { get; } = new ReactivePropertySlim<SomeEnum>();
+        public ReactivePropertySlim<int> Number { get; }
+
+        public ReactivePropertySlim<bool> Bool { get; }
+
+        public ReactivePropertySlim<SomeEnum> SomeEnum { get; }
 
         private readonly SaveLoadUsecase _saveLoadUsecase;
 
@@ -28,87 +35,130 @@ namespace WpfApp1
             _saveLoadUsecase.OnSomeEnumChanged += SaveLoadUsecase_OnSomeEnumChanged;
             _initUsecase = initUsecase;
 
+            _entity = new ReactivePropertySlim<XXEntity>();
             LoadEntity();
+            _entity.Subscribe(x =>
+            {
+                if (IsAutoSave)
+                {
+                    Debug.WriteLine("Auto Save");
 
-            Text.Where(input => TextVO.IsValid(input))
-                .Subscribe(validValue =>
-                {
-                    // TODO K.I : ここをDRY
-                    // TODO K.I : Usecaseを設計しなおし
-                    var entity = _saveLoadUsecase.Load();
-                    entity.Text = new(validValue);
-                    _saveLoadUsecase.Save(entity);
-                });
-            Text.Where(input => !TextVO.IsValid(input))
-                .Subscribe(InvalidValue =>
-                {
-                    var currected = TextVO.CurrectValue(InvalidValue);
-                    Text.Value = currected;
-                });
+                    _saveLoadUsecase.Save(x);
+                }
+            });
 
-            Number.Where(input => NumberVO.IsValid(input))
-                .Subscribe(validValue =>
+            Text = _entity.ToReactivePropertySlimAsSynchronized(
+                x => x.Value,
+                x => x.Text.Content,
+                x =>
                 {
-                    var entity = _saveLoadUsecase.Load();
-                    entity.Number = new(validValue);
-                    _saveLoadUsecase.Save(entity);
-                });
-            Number.Where(input => !NumberVO.IsValid(input))
-                .Subscribe(InvalidValue =>
-                {
-                    var currected = NumberVO.CurrectValue(InvalidValue);
-                    Number.Value = currected;
+                    Debug.WriteLine("Text ConvertBack");
+
+                    var currected = TextVO.CurrectValue(x);
+                    var entity = _entity.Value.Clone();
+                    entity.Text = new(currected);
+                    return entity;
                 });
 
-            Bool.Subscribe(value =>
+            Number = _entity.ToReactivePropertySlimAsSynchronized(
+                x => x.Value,
+                x => x.Number.Content,
+                x =>
                 {
-                    var entity = _saveLoadUsecase.Load();
-                    entity.Bool = new(value);
-                    _saveLoadUsecase.Save(entity);
+                    Debug.WriteLine("Number ConvertBack");
+
+                    var currected = NumberVO.CurrectValue(x);
+                    var entity = _entity.Value.Clone();
+                    entity.Number = new(currected);
+                    return entity;
                 });
 
-            SomeEnum.Subscribe(value =>
+            Bool = _entity.ToReactivePropertySlimAsSynchronized(
+                x => x.Value,
+                x => x.Bool.Content,
+                x =>
                 {
-                    var entity = _saveLoadUsecase.Load();
-                    entity.SomeEnum = new(value);
-                    _saveLoadUsecase.Save(entity);
+                    Debug.WriteLine("Bool ConvertBack");
+
+                    var currected = BoolVO.CurrectValue(x);
+                    var entity = _entity.Value.Clone();
+                    entity.Bool = new(currected);
+                    return entity;
+                });
+
+            SomeEnum = _entity.ToReactivePropertySlimAsSynchronized(
+                x => x.Value,
+                x => x.SomeEnum.Content,
+                x =>
+                {
+                    Debug.WriteLine("SomeEnum ConvertBack");
+
+                    var currected = SomeEnumVO.CurrectValue(x);
+                    var entity = _entity.Value.Clone();
+                    entity.SomeEnum = new(currected);
+                    return entity;
                 });
         }
 
         private void SaveLoadUsecase_OnSomeEnumChanged()
         {
-            // TODO K.I : デバッグ用
             Debug.WriteLine("SaveLoadUsecase_OnSomeEnumChanged");
 
-            var entity = _saveLoadUsecase.Load();
-            SomeEnum.Value = entity.SomeEnum.Content;
+            SomeEnum.Value = _entity.Value.SomeEnum.Content;
         }
 
         private void LoadEntity()
         {
-            var entity = _saveLoadUsecase.Load();
+            Debug.WriteLine("LoadEntity");
 
-            Text.Value = entity.Text.Content;
-            Number.Value = entity.Number.Content;
-            Bool.Value = entity.Bool.Content;
-            SomeEnum.Value = entity.SomeEnum.Content;
+            _entity.Value = _saveLoadUsecase.Load();
         }
 
         internal void Init()
         {
+            Debug.WriteLine("Init");
+
             _initUsecase.Init();
             LoadEntity();
         }
 
-        internal void ShowModelData()
+        internal void ShowData()
         {
-            var entity = _saveLoadUsecase.Load();
+            var entity = _entity.Value;
             var text = entity.Text.Content;
             var number = entity.Number.Content;
             var b = entity.Bool.Content;
             var someEnum = entity.SomeEnum.Content;
 
-            MessageBox.Show($"XXEntity Data\n\nText : {text}\n Number : {number}\n Bool : {b}\n SomeEnum : {someEnum.GetText()}");
+            var sb = new StringBuilder();
+            sb.AppendLine("Model Data : ");
+            sb.AppendLine($"  Text : {text}");
+            sb.AppendLine($"  Number : {number}");
+            sb.AppendLine($"  Bool : {b}");
+            sb.AppendLine($"  SomeEnum : {someEnum.GetText()}");
+
+            sb.AppendLine();
+
+            entity = _saveLoadUsecase.Load();
+            text = entity.Text.Content;
+            number = entity.Number.Content;
+            b = entity.Bool.Content;
+            someEnum = entity.SomeEnum.Content;
+
+            sb.AppendLine("Repository Data : ");
+            sb.AppendLine($"  Text : {text}");
+            sb.AppendLine($"  Number : {number}");
+            sb.AppendLine($"  Bool : {b}");
+            sb.AppendLine($"  SomeEnum : {someEnum.GetText()}");
+
+            MessageBox.Show(sb.ToString());
+        }
+
+        internal void Save()
+        {
+            Debug.WriteLine("Save");
+
+            _saveLoadUsecase.Save(_entity.Value);
         }
     }
 }

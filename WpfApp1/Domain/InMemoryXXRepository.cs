@@ -13,12 +13,12 @@ namespace Repository
 
         public XXEntity Load()
         {
-            return XXEntity;
+            return XXEntity.Clone();
         }
 
         public void Save(XXEntity entity)
         {
-            XXEntity = entity;
+            XXEntity = entity.Clone();
         }
     }
 }

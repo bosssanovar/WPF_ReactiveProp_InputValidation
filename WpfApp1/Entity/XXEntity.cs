@@ -35,6 +35,18 @@
             SomeEnum = new SomeEnumVO(SomeEnum_InitValue);
         }
 
+        public XXEntity Clone()
+        {
+            var ret = new XXEntity();
+
+            ret.Text = Text;
+            ret.Number = Number;
+            ret.Bool = Bool;
+            ret.SomeEnum = SomeEnum;
+
+            return ret;
+        }
+
         private void CurrectSomeEnumIfNeed()
         {
             if (!Bool.Content && SomeEnum.Content == Entity.SomeEnum.Cat)

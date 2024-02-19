@@ -33,7 +33,7 @@ namespace WpfApp1
             InitCommand = new AsyncReactiveCommand();
             InitCommand.Subscribe(async () =>
             {
-                await Task.Delay(2000);
+                await Task.Delay(500);
 
                 _model.Init();
             });
@@ -41,9 +41,17 @@ namespace WpfApp1
             ShowCommand = new AsyncReactiveCommand();
             ShowCommand.Subscribe(async () =>
             {
-                await Task.Delay(1000);
+                await Task.Delay(500);
 
-                _model.ShowModelData();
+                _model.ShowData();
+            });
+
+            SaveCommand = new AsyncReactiveCommand();
+            SaveCommand.Subscribe(async () =>
+            {
+                await Task.Delay(500);
+
+                _model.Save();
             });
 
             ComboBoxItems = new ReactivePropertySlim<List<ComboBoxItemDisplayValue<SomeEnum>>>();

@@ -12,6 +12,15 @@ namespace WpfApp1
 
         private readonly Model _model;
 
+        public bool IsAutoSave
+        {
+            get { return _model.IsAutoSave; }
+            set
+            {
+                _model.IsAutoSave = value;
+            }
+        }
+
         public ReactivePropertySlim<string> Text { get; }
         public ReactivePropertySlim<int> Number { get; }
         public ReactivePropertySlim<bool> Bool { get; }
@@ -19,6 +28,7 @@ namespace WpfApp1
 
         public AsyncReactiveCommand InitCommand { get; }
         public AsyncReactiveCommand ShowCommand { get; }
+        public AsyncReactiveCommand SaveCommand { get; }
 
         public ReactivePropertySlim<List<ComboBoxItemDisplayValue<SomeEnum>>> ComboBoxItems { get; private set; }
 
