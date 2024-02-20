@@ -31,6 +31,21 @@ namespace WpfApp1
 
         public ReactivePropertySlim<List<ComboBoxItemDisplayValue<SomeEnum>>> ComboBoxItems { get; private set; }
 
+        private void InitComboBoxItems()
+        {
+#pragma warning disable IDE0028 // コレクションの初期化を簡略化します
+            var comboBoxItemList = new List<ComboBoxItemDisplayValue<SomeEnum>>();
+#pragma warning restore IDE0028 // コレクションの初期化を簡略化します
+            comboBoxItemList.Add(new ComboBoxItemDisplayValue<SomeEnum>(Entity.SomeEnum.Dog, Entity.SomeEnum.Dog.GetText()));
+            if (Bool.Value)
+            {
+                comboBoxItemList.Add(new ComboBoxItemDisplayValue<SomeEnum>(Entity.SomeEnum.Cat, Entity.SomeEnum.Cat.GetText()));
+            }
+            comboBoxItemList.Add(new ComboBoxItemDisplayValue<SomeEnum>(Entity.SomeEnum.Elephant, Entity.SomeEnum.Elephant.GetText()));
+            comboBoxItemList.Add(new ComboBoxItemDisplayValue<SomeEnum>(Entity.SomeEnum.Pig, Entity.SomeEnum.Pig.GetText()));
+
+            ComboBoxItems.Value = new List<ComboBoxItemDisplayValue<SomeEnum>>(comboBoxItemList);
+        }
 
         private void InitMediator()
         {
