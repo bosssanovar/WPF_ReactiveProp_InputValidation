@@ -25,8 +25,6 @@
         }
         public SomeEnumVO SomeEnum { get; set; } = new SomeEnumVO(SomeEnum_InitValue);
 
-        public event Action? OnSomeEnumChanged;
-
         public void Init()
         {
             Text = new TextVO(Text_InitValue);
@@ -37,12 +35,13 @@
 
         public XXEntity Clone()
         {
-            var ret = new XXEntity();
-
-            ret.Text = Text;
-            ret.Number = Number;
-            ret.Bool = Bool;
-            ret.SomeEnum = SomeEnum;
+            var ret = new XXEntity
+            {
+                Text = Text,
+                Number = Number,
+                Bool = Bool,
+                SomeEnum = SomeEnum
+            };
 
             return ret;
         }
@@ -52,7 +51,6 @@
             if (!Bool.Content && SomeEnum.Content == Entity.SomeEnum.Cat)
             {
                 SomeEnum = new SomeEnumVO(SomeEnum_InitValue);
-                OnSomeEnumChanged?.Invoke();
             }
         }
     }

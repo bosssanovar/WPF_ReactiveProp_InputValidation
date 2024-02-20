@@ -12,21 +12,20 @@ namespace RepositoryMonitor
 {
     public partial class RepositoryMonitorView : INotifyPropertyChanged
     {
+#pragma warning disable CS0067 // イベント 'RepositoryMonitorView.PropertyChanged' は使用されていません
         public event PropertyChangedEventHandler? PropertyChanged;
+#pragma warning restore CS0067 // イベント 'RepositoryMonitorView.PropertyChanged' は使用されていません
 
-        IXXRepository _repository;
+        readonly IXXRepository _repository;
         XXEntity? _presentEntity;
 
-        public ReactiveCollection<Item> Items { get; } = new ReactiveCollection<Item>();
+        public ReactiveCollection<Item> Items { get; } = [];
 
         public AsyncReactiveCommand ClearCommand { get; } = new AsyncReactiveCommand();
 
         private void DetectDifference()
         {
-            if (_presentEntity is null)
-            {
-                _presentEntity = _repository.Load();
-            }
+            _presentEntity ??= _repository.Load();
 
             var nowEntity = _repository.Load();
 

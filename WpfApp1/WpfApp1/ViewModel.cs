@@ -27,7 +27,6 @@ namespace WpfApp1
         public ReactivePropertySlim<SomeEnum> SomeEnum { get; }
 
         public AsyncReactiveCommand InitCommand { get; }
-        public AsyncReactiveCommand ShowCommand { get; }
         public AsyncReactiveCommand SaveCommand { get; }
 
         public ReactivePropertySlim<List<ComboBoxItemDisplayValue<SomeEnum>>> ComboBoxItems { get; private set; }

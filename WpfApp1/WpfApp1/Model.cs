@@ -15,15 +15,7 @@ namespace WpfApp1
     {
         public bool IsAutoSave { get; set; }
 
-        private ReactivePropertySlim<XXEntity> _entity;
-
-        public ReactivePropertySlim<string> Text { get; }
-
-        public ReactivePropertySlim<int> Number { get; }
-
-        public ReactivePropertySlim<bool> Bool { get; }
-
-        public ReactivePropertySlim<SomeEnum> SomeEnum { get; }
+        public ReactivePropertySlim<XXEntity> Entity { get; } = new ReactivePropertySlim<XXEntity>();
 
         private readonly SaveLoadUsecase _saveLoadUsecase;
 
@@ -32,12 +24,10 @@ namespace WpfApp1
         public Model(SaveLoadUsecase saveLoadUsecase, InitUsecase initUsecase)
         {
             _saveLoadUsecase = saveLoadUsecase;
-            _saveLoadUsecase.OnSomeEnumChanged += SaveLoadUsecase_OnSomeEnumChanged;
             _initUsecase = initUsecase;
 
-            _entity = new ReactivePropertySlim<XXEntity>();
             LoadEntity();
-            _entity.Subscribe(x =>
+            Entity.Subscribe(x =>
             {
                 if (IsAutoSave)
                 {
@@ -46,72 +36,13 @@ namespace WpfApp1
                     _saveLoadUsecase.Save(x);
                 }
             });
-
-            Text = _entity.ToReactivePropertySlimAsSynchronized(
-                x => x.Value,
-                x => x.Text.Content,
-                x =>
-                {
-                    Debug.WriteLine("Text ConvertBack");
-
-                    var currected = TextVO.CurrectValue(x);
-                    var entity = _entity.Value.Clone();
-                    entity.Text = new(currected);
-                    return entity;
-                });
-
-            Number = _entity.ToReactivePropertySlimAsSynchronized(
-                x => x.Value,
-                x => x.Number.Content,
-                x =>
-                {
-                    Debug.WriteLine("Number ConvertBack");
-
-                    var currected = NumberVO.CurrectValue(x);
-                    var entity = _entity.Value.Clone();
-                    entity.Number = new(currected);
-                    return entity;
-                });
-
-            Bool = _entity.ToReactivePropertySlimAsSynchronized(
-                x => x.Value,
-                x => x.Bool.Content,
-                x =>
-                {
-                    Debug.WriteLine("Bool ConvertBack");
-
-                    var currected = BoolVO.CurrectValue(x);
-                    var entity = _entity.Value.Clone();
-                    entity.Bool = new(currected);
-                    return entity;
-                });
-
-            SomeEnum = _entity.ToReactivePropertySlimAsSynchronized(
-                x => x.Value,
-                x => x.SomeEnum.Content,
-                x =>
-                {
-                    Debug.WriteLine("SomeEnum ConvertBack");
-
-                    var currected = SomeEnumVO.CurrectValue(x);
-                    var entity = _entity.Value.Clone();
-                    entity.SomeEnum = new(currected);
-                    return entity;
-                });
-        }
-
-        private void SaveLoadUsecase_OnSomeEnumChanged()
-        {
-            Debug.WriteLine("SaveLoadUsecase_OnSomeEnumChanged");
-
-            SomeEnum.Value = _entity.Value.SomeEnum.Content;
         }
 
         private void LoadEntity()
         {
             Debug.WriteLine("LoadEntity");
 
-            _entity.Value = _saveLoadUsecase.Load();
+            Entity.Value = _saveLoadUsecase.Load();
         }
 
         internal void Init()
@@ -126,7 +57,7 @@ namespace WpfApp1
         {
             Debug.WriteLine("Save");
 
-            _saveLoadUsecase.Save(_entity.Value);
+            _saveLoadUsecase.Save(Entity.Value);
         }
     }
 }

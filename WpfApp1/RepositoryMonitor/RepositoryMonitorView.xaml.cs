@@ -23,11 +23,14 @@ namespace RepositoryMonitor
     public partial class RepositoryMonitorView : Window
     {
         // タイマのインスタンス
-        private DispatcherTimer _timer;
+        private readonly DispatcherTimer _timer;
 
         public RepositoryMonitorView(IXXRepository repository)
         {
             _repository = repository;
+
+            // タイマのインスタンスを生成
+            _timer = new DispatcherTimer(); // 優先度はDispatcherPriority.Background
 
             ClearCommand.Subscribe(async _ =>
             {
@@ -44,9 +47,7 @@ namespace RepositoryMonitor
         // タイマを設定する
         private void SetupTimer()
         {
-            // タイマのインスタンスを生成
-            _timer = new DispatcherTimer(); // 優先度はDispatcherPriority.Background
-                                            // インターバルを設定
+            // インターバルを設定
             _timer.Interval = new TimeSpan(0, 0, 0, 0, 300);
             // タイマメソッドを設定
             _timer.Tick += new EventHandler(MyTimerMethod);
